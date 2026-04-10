@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 const PublicFooter = () => {
   return (
-    <footer style={{ padding: '80px', background: '#0f172a', color: '#cbd5e1', marginTop: 'auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '60px', marginBottom: '60px', maxWidth: '1200px', margin: '0 auto 60px' }}>
+    <footer className="px-6 md:px-20 py-16 md:py-24 bg-[#0f172a] text-slate-300 mt-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16 max-w-[1200px] mx-auto mb-16">
         <div>
           <h4 style={{ color: '#fff', fontSize: '18px', fontWeight: 600, marginBottom: '20px' }}>LemiCare Hospital</h4>
           <p style={{ margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '12px' }}><span>📍</span> Medical College Road, Kochin</p>

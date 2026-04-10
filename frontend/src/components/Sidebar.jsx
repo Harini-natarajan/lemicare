@@ -1,161 +1,120 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 
-const ROLE_DASHBOARD = {
-  doctor: '/doctor/dashboard',
-  receptionist: '/reception/dashboard',
-  pharmacist: '/pharmacy/dashboard',
-  patient: '/patient/dashboard',
-};
-
-const NavItem = ({ to, icon, label, active }) => (
-  <Link
-    to={to}
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      padding: '11px 16px',
-      borderRadius: '10px',
-      textDecoration: 'none',
-      fontSize: '14px',
-      fontWeight: active ? 600 : 500,
-      color: active ? '#fff' : 'rgba(255,255,255,0.65)',
-      background: active ? 'rgba(255,255,255,0.15)' : 'transparent',
-      transition: 'all 0.15s',
-    }}
-    className={!active ? 'sidebar-link' : ''}
-  >
-    <span style={{ opacity: active ? 1 : 0.8 }}>{icon}</span>
-    {label}
-  </Link>
-);
-
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const role = user?.role || 'patient';
-  const path = location.pathname;
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const initials = user?.name
-    ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-    : 'U';
+  const menuItems = [
+    { name: 'Dashboard', icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z', path: `/${user?.role || 'patient'}/dashboard` },
+    { name: 'Appointments', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z', path: '/appointments' },
+    { name: 'Prescriptions', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z', path: '/prescriptions' },
+    { name: 'Invoices', icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2', path: '/bills' },
+    { name: 'Profile Settings', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', path: '/profile' },
+  ];
 
   return (
-    <div style={{
-      width: '240px',
-      flexShrink: 0,
-      background: 'linear-gradient(180deg, #0f766e 0%, #0369a1 100%)',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '24px 16px',
-      fontFamily: "'Inter', sans-serif",
-    }}>
-      {/* Logo */}
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px', paddingLeft: '4px', textDecoration: 'none' }}>
-        <div style={{
-          width: '36px', height: '36px', borderRadius: '9px',
-          background: 'rgba(255,255,255,0.2)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-          </svg>
-        </div>
-        <div>
-          <p style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>LemiCare</p>
-          <p style={{ margin: 0, fontSize: '10px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '1px' }}>Portal</p>
-        </div>
-      </Link>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[60] lg:hidden transition-opacity duration-300"
+          onClick={onClose}
+        />
+      )}
 
-      {/* User Card */}
-      <div style={{
-        background: 'rgba(255,255,255,0.12)',
-        borderRadius: '12px',
-        padding: '14px',
-        marginBottom: '24px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-      }}>
-        <div style={{
-          width: '38px', height: '38px', borderRadius: '50%',
-          background: 'rgba(255,255,255,0.25)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '14px', fontWeight: 700, color: '#fff', flexShrink: 0,
-        }}>
-          {initials}
-        </div>
-        <div style={{ overflow: 'hidden' }}>
-          <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {user?.name || 'User'}
-          </p>
-          <p style={{ margin: '1px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.6)', textTransform: 'capitalize' }}>
-            {role}
-          </p>
-        </div>
-      </div>
-
-      {/* Nav */}
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
-        <NavItem to={ROLE_DASHBOARD[role] || '/patient/dashboard'} active={path === ROLE_DASHBOARD[role]} label="Dashboard" icon={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        } />
-        <NavItem to="/profile" active={path === '/profile'} label="Profile" icon={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        } />
-        {(role === 'patient' || role === 'receptionist' || role === 'doctor') && (
-          <NavItem to="/appointments" active={path === '/appointments'} label="Appointments" icon={
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          } />
-        )}
-        {(role === 'patient' || role === 'receptionist' || role === 'pharmacist') && (
-          <NavItem to="/bills" active={path === '/bills'} label="Bills" icon={
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          } />
-        )}
-        {(role === 'patient' || role === 'doctor' || role === 'pharmacist') && (
-          <NavItem to="/prescriptions" active={path === '/prescriptions'} label="Prescriptions" icon={
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-          } />
-        )}
-        {role === 'pharmacist' && (
-          <NavItem to="/pharmacy" active={path === '/pharmacy'} label="Pharmacy" icon={
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          } />
-        )}
-      </nav>
-
-      {/* Logout */}
-      <button
-        onClick={handleLogout}
-        style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '11px 16px', borderRadius: '10px',
-          background: 'rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          color: 'rgba(255,255,255,0.75)', fontSize: '14px', fontWeight: 500,
-          cursor: 'pointer', width: '100%', textAlign: 'left', marginTop: '8px',
-        }}
+      {/* Sidebar Content */}
+      <aside 
+        className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-100 z-[70] transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Logout
-      </button>
+        <div className="h-full flex flex-col p-6">
+          {/* Logo Section */}
+          <div className="flex items-center gap-3 mb-10 px-2">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-lg shadow-teal-200">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-xl font-black text-slate-800 tracking-tight m-0 leading-tight">LemiCare</h1>
+              <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest m-0 leading-tight mt-0.5">Patient Portal</p>
+            </div>
+            
+            {/* Mobile Close Button */}
+            <button 
+              onClick={onClose}
+              className="ml-auto lg:hidden p-2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
 
-      <style>{`
-        .sidebar-link:hover {
-          background: rgba(255,255,255,0.1) !important;
-          color: rgba(255,255,255,0.9) !important;
-        }
-      `}</style>
-    </div>
+          {/* Navigation Items */}
+          <nav className="flex-1 space-y-1.5">
+            {menuItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                onClick={() => { if (window.innerWidth < 1024) onClose(); }}
+                className={({ isActive }) => `
+                  flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-300
+                  ${isActive 
+                    ? 'bg-teal-50 text-teal-700 shadow-sm' 
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                  }
+                `}
+              >
+                <svg 
+                  width="18" 
+                  height="18" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2.5"
+                  className="transition-colors"
+                >
+                  <path d={item.icon} />
+                </svg>
+                {item.name}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Bottom Profile Section */}
+          <div className="mt-auto pt-6 border-t border-slate-50">
+            <div className="flex items-center gap-3 mb-4 px-2">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold border-2 border-white shadow-sm">
+                {user?.name?.[0] || 'U'}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-slate-800 truncate m-0">{user?.name || 'Patient'}</p>
+                <p className="text-[11px] text-slate-400 font-medium truncate m-0">{user?.email || 'patient@email.com'}</p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 };
 

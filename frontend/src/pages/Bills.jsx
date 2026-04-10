@@ -2,111 +2,93 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 
-const statusColor = {
-  paid:    { bg: '#d1fae5', color: '#059669' },
-  unpaid:  { bg: '#fee2e2', color: '#dc2626' },
-  pending: { bg: '#fef3c7', color: '#d97706' },
-};
-
 const Bills = () => {
-  const [bills, setBills] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [bills, setBills] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    axios.get('bills')
-      .then(res => setBills(res.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    useEffect(() => {
+        axios.get('bills')
+            .then(res => setBills(res.data))
+            .catch(() => { })
+            .finally(() => setLoading(false));
+    }, []);
 
-  const totalDue = bills
-    .filter(b => b.status !== 'paid')
-    .reduce((sum, b) => sum + (b.grandTotal || b.total || 0), 0);
-  const totalPaid = bills
-    .filter(b => b.status === 'paid')
-    .reduce((sum, b) => sum + (b.grandTotal || b.total || 0), 0);
-
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f1f5f9', fontFamily: "'Inter', sans-serif" }}>
-      <Sidebar />
-      <div style={{ flex: 1, padding: '40px 48px', overflowY: 'auto' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ margin: 0, fontSize: '26px', fontWeight: 800, color: '#0f172a' }}>Bills & Payments</h1>
-          <p style={{ margin: '6px 0 0', fontSize: '14px', color: '#64748b' }}>{bills.length} total records</p>
-        </div>
-
-        {/* Summary Cards */}
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '32px' }}>
-          <div style={{ flex: 1, background: 'linear-gradient(135deg, #0f766e, #0369a1)', borderRadius: '16px', padding: '24px' }}>
-            <p style={{ margin: '0 0 6px', fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Due</p>
-            <p style={{ margin: 0, fontSize: '32px', fontWeight: 800, color: '#fff' }}>₹{totalDue.toLocaleString()}</p>
-          </div>
-          <div style={{ flex: 1, background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.07)', border: '1px solid #e2e8f0' }}>
-            <p style={{ margin: '0 0 6px', fontSize: '12px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Paid</p>
-            <p style={{ margin: 0, fontSize: '32px', fontWeight: 800, color: '#059669' }}>₹{totalPaid.toLocaleString()}</p>
-          </div>
-          <div style={{ flex: 1, background: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.07)', border: '1px solid #e2e8f0' }}>
-            <p style={{ margin: '0 0 6px', fontSize: '12px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Bills</p>
-            <p style={{ margin: 0, fontSize: '32px', fontWeight: 800, color: '#0f172a' }}>{bills.length}</p>
-          </div>
-        </div>
-
-        {/* Bills Table */}
-        <div style={{ background: '#fff', borderRadius: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.07)', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-          {/* Table Header */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.5fr 1fr 1fr 1fr', padding: '14px 24px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-            {['Bill ID', 'Date', 'Amount', 'Status', 'Due Date'].map(h => (
-              <span key={h} style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</span>
-            ))}
-          </div>
-
-          {loading ? (
-            <div style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>Loading bills...</div>
-          ) : bills.length ? (
-            bills.map((bill, i) => {
-              const status = bill.status || 'unpaid';
-              const sc = statusColor[status] || statusColor.unpaid;
-              return (
-                <div key={bill._id} style={{
-                  display: 'grid', gridTemplateColumns: '2fr 1.5fr 1fr 1fr 1fr',
-                  padding: '18px 24px', alignItems: 'center',
-                  borderBottom: i < bills.length - 1 ? '1px solid #f1f5f9' : 'none',
-                  transition: 'background 0.15s',
-                }} className="bill-row">
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', fontFamily: 'monospace' }}>
-                    #{bill._id?.slice(-8).toUpperCase()}
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#64748b' }}>
-                    {bill.createdAt ? new Date(bill.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                  </span>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
-                    ₹{(bill.grandTotal || bill.total || 0).toLocaleString()}
-                  </span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <span style={{ padding: '4px 12px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, background: sc.bg, color: sc.color }}>
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </span>
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#64748b' }}>
-                    {bill.dueDate ? new Date(bill.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
-                  </span>
+    return (
+        <div className="dashboard-container">
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            <div className="dashboard-content">
+                
+                {/* Mobile Header */}
+                <div className="lg:hidden flex justify-between items-center mb-6">
+                   <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-white rounded-lg shadow-sm border border-slate-200">
+                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                   </button>
+                   <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded bg-teal-600 flex items-center justify-center text-white font-bold text-xs">L</div>
+                      <span className="font-bold text-slate-800">LemiCare</span>
+                   </div>
                 </div>
-              );
-            })
-          ) : (
-            <div style={{ padding: '60px', textAlign: 'center' }}>
-              <div style={{ fontSize: '36px', marginBottom: '10px', opacity: 0.4 }}>🧾</div>
-              <p style={{ margin: 0, color: '#94a3b8', fontSize: '14px' }}>No billing records found</p>
-            </div>
-          )}
-        </div>
 
-        <style>{`.bill-row:hover { background: #f8fafc; }`}</style>
-      </div>
-    </div>
-  );
+                <div className="mb-8">
+                    <h1 className="text-2xl font-extrabold text-slate-900 m-0">Billing & Invoices</h1>
+                    <p className="text-sm text-slate-500 mt-1">Manage your payments and download insurance-ready receipts.</p>
+                </div>
+
+                {loading ? (
+                    <div className="text-center py-20 text-slate-400">Loading invoices...</div>
+                ) : bills.length > 0 ? (
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                        {/* Desktop Table Header */}
+                        <div className="hidden lg:grid grid-cols-5 gap-4 px-6 py-4 bg-slate-50 border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            <span>Service</span>
+                            <span>Invoice Date</span>
+                            <span>Amount</span>
+                            <span>Status</span>
+                            <span className="text-right">Actions</span>
+                        </div>
+                        
+                        {/* List Items */}
+                        <div className="flex flex-col">
+                            {bills.map((b, i) => (
+                                <div key={i} className="px-6 py-5 border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors flex flex-col lg:grid lg:grid-cols-5 lg:items-center gap-4">
+                                    <div className="flex flex-col">
+                                        <span className="lg:hidden text-[10px] font-black uppercase text-slate-400 mb-1">Service</span>
+                                        <span className="text-sm font-bold text-slate-800">{b.service || 'Medical Consultation'}</span>
+                                        <span className="text-[10px] text-slate-500">#{b._id.slice(-8).toUpperCase()}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="lg:hidden text-[10px] font-black uppercase text-slate-400 mb-1">Invoice Date</span>
+                                        <span className="text-sm text-slate-600">{new Date(b.date).toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="lg:hidden text-[10px] font-black uppercase text-slate-400 mb-1">Amount</span>
+                                        <span className="text-sm font-black text-slate-900">₹{b.amount}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="lg:hidden text-[10px] font-black uppercase text-slate-400 mb-1">Status</span>
+                                        <span className={`w-fit px-2 py-1 rounded text-[10px] font-black uppercase ${b.status === 'paid' ? 'bg-teal-50 text-teal-600' : 'bg-red-50 text-red-600'}`}>
+                                            {b.status}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-start lg:justify-end">
+                                        <button className="px-4 py-2 bg-slate-900 text-white rounded-lg font-bold text-[10px] hover:bg-slate-800 cursor-pointer border-none transition-colors">Download Receipt</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="bg-white rounded-2xl border border-dashed border-slate-200 py-20 text-center flex flex-col items-center">
+                        <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 mb-4">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        </div>
+                        <p className="text-slate-400 text-sm font-medium">No billing history found.</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default Bills;

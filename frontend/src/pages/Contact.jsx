@@ -6,21 +6,21 @@ const Contact = () => {
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", width: '100vw', overflowX: 'hidden', background: '#f8fafc', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <PublicNavbar />
-      <section style={{ padding: '80px', flex: 1, display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: '100%', maxWidth: '800px', background: '#fff', borderRadius: '24px', padding: '60px', boxShadow: '0 10px 40px rgba(0,0,0,0.05)' }}>
+      <section className="px-6 md:px-10 py-16 md:py-24 flex-1 flex justify-center items-start">
+        <div className="w-full max-w-[800px] bg-white rounded-3xl p-8 md:p-14 shadow-xl shadow-slate-200/50">
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <h2 style={{ fontSize: '36px', fontFamily: "'Georgia', serif", color: '#1e293b', marginBottom: '16px' }}>Contact & Support</h2>
             <p style={{ color: '#64748b', fontSize: '16px' }}>We are always here to listen and help you. Send us a message below.</p>
           </div>
           
-          <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', gap: '20px' }}>
-              <input type="text" placeholder="First Name" style={{ flex: 1, padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-              <input type="text" placeholder="Last Name" style={{ flex: 1, padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
+          <form className="flex flex-col gap-5">
+            <div className="flex flex-col md:flex-row gap-5">
+              <input type="text" placeholder="First Name" className="flex-1 p-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 transition-colors" />
+              <input type="text" placeholder="Last Name" className="flex-1 p-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 transition-colors" />
             </div>
-            <input type="email" placeholder="Email Address" style={{ padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-            <textarea placeholder="How can we help you?" style={{ padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', minHeight: '150px', resize: 'vertical' }}></textarea>
-            <button type="button" className="hover:bg-blue-700 transition-colors" style={{ padding: '16px', background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '16px', marginTop: '10px' }}>
+            <input type="email" placeholder="Email Address" className="p-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 transition-colors" />
+            <textarea placeholder="How can we help you?" className="p-4 rounded-xl border border-slate-200 outline-none focus:border-blue-500 transition-colors min-h-[150px] resize-vertical"></textarea>
+            <button type="button" className="hover:bg-blue-700 transition-colors p-4 bg-blue-600 text-white border-none rounded-xl font-semibold cursor-pointer text-base mt-2 shadow-lg shadow-blue-200">
               Send Message
             </button>
           </form>
