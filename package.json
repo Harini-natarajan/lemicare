@@ -2,7 +2,7 @@
   "name": "lemicare",
   "version": "1.0.0",
   "scripts": {
-    "vercel-build": "npm install --prefix frontend && npm run build --prefix frontend",
+    "vercel-build": "npm install --include=dev --prefix frontend && npm run build --prefix frontend",
     "install-backend": "npm install --prefix backend"
   }
 }
